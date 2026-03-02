@@ -39,3 +39,7 @@ When abnormal patterns are detected, the system automatically isolates the suspi
 
 Instead of only detecting and blocking insider threats, ShadowMind isolates and controls suspicious sessions using adaptive deception.  
 This prevents damage while simultaneously gathering behavioral intelligence.
+
+## 🖼 Architecture Diagram
+
+![ShadowMind Architecture](architecture.png)
