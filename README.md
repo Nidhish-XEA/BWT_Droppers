@@ -2,52 +2,60 @@
 
 ## 🧩 Problem Statement
 
-Organizations defend their network perimeters but often fail to detect abnormal behavior from trusted internal users.  
-Insider threats cause significant damage because they bypass traditional firewalls and IP-based blocking systems.
+Traditional cybersecurity systems detect perimeter threats but fail to identify abnormal behavior from trusted internal users.  
+Insider threats often bypass firewalls and static defenses, leading to severe data breaches.
 
 ---
 
-## 🚀 Our Solution
+## 🚀 Solution Overview
 
-ShadowMind is a behavior-based threat detection system that monitors internal user activity in real time.  
-When abnormal patterns are detected, the system automatically isolates the suspicious session into a controlled deception environment instead of directly blocking access.
+ShadowMind monitors internal user activity in real time and detects behavioral anomalies.  
+Instead of simply blocking suspicious users, the system isolates them into a controlled deception environment and collects behavioral intelligence for further analysis.
 
 ---
 
 ## 🔍 Key Features
 
-- Real-time behavioral monitoring  
+- Real-time activity monitoring  
 - Baseline vs anomaly detection  
-- Insider activity risk scoring  
-- Automatic containment via deception layer  
+- Attacker classification (skill-level & behavioral fingerprinting)  
+- Risk scoring and decision making  
+- Controlled containment via deception sandbox  
 - Security monitoring dashboard  
 
 ---
 
-## 🏗️ Proposed Architecture
+## 🏗️ Architecture
 
-1. User Activity Logger  
-2. Behavior Analysis Engine  
-3. Risk Scoring Module  
-4. Adaptive Routing Engine  
-5. Deception Sandbox  
-6. Monitoring Dashboard  
+The system consists of the following modules:
 
----
-
-## 💡 Innovation
-
-Instead of only detecting and blocking insider threats, ShadowMind isolates and controls suspicious sessions using adaptive deception.  
-This prevents damage while simultaneously gathering behavioral intelligence.
+1. **User / Employee Client**  
+2. **Web Application**  
+3. **Activity Logger**  
+4. **Behavior Analysis Engine**  
+5. **Attacker Classification Module**  
+   - Predicts skill level
+   - Fingerprints behavior patterns  
+6. **Risk Scoring Module**  
+   - Assigns risk value  
+7. **Decision Branch**  
+   - Normal Access (low risk)  
+   - Deception Sandbox (high risk)  
+8. **Monitoring Dashboard**
 
 ## 🖼 Architecture Diagram
 
 ![ShadowMind Architecture](architecture.png)
 
+---
 
 ## 🛠 Proposed Tech Stack
 
-- Backend: FastAPI (Python)
-- Frontend: React / HTML-CSS
-- Database: SQLite
-- Visualization: Chart.js
+- Backend: **FastAPI (Python)**  
+- Frontend: **React or simple HTML/CSS**  
+- Database: **SQLite**  
+- Visualization / Dashboard: **Chart.js / Streamlit**  
+
+---
+
+## 📁 Repository Structure (Planned)
