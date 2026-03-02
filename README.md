@@ -61,6 +61,7 @@ The system consists of the following modules:
 ---
 
 ## 📁 Repository Structure (Planned)
+```
 /backend
 ├─ app.py
 ├─ detectors.py
@@ -70,8 +71,7 @@ The system consists of the following modules:
 ├─ dashboard.js
 /README.md
 /architecture.png
-
-
+```
 ---
 
 ## 🧠 Innovation Summary
