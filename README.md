@@ -43,3 +43,11 @@ This prevents damage while simultaneously gathering behavioral intelligence.
 ## 🖼 Architecture Diagram
 
 ![ShadowMind Architecture](architecture.png)
+
+
+## 🛠 Proposed Tech Stack
+
+- Backend: FastAPI (Python)
+- Frontend: React / HTML-CSS
+- Database: SQLite
+- Visualization: Chart.js
