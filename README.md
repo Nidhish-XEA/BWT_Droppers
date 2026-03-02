@@ -61,3 +61,20 @@ The system consists of the following modules:
 ---
 
 ## 📁 Repository Structure (Planned)
+/backend
+├─ app.py
+├─ detectors.py
+├─ classifier.py
+/frontend
+├─ index.html
+├─ dashboard.js
+/README.md
+/architecture.png
+
+
+---
+
+## 🧠 Innovation Summary
+
+ShadowMind doesn’t just detect threats — it **engages and contains** suspicious users intelligently.  
+By profiling attacker behavior and skill level, ShadowMind adapts its responses, provides deception, and gathers intelligence — a step beyond traditional detection.
