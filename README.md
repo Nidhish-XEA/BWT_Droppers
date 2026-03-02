@@ -34,7 +34,7 @@ The system consists of the following modules:
 3. **Activity Logger**  
 4. **Behavior Analysis Engine**  
 5. **Attacker Classification Module**  
-   - Predicts skill level
+   - Predicts skill level  
    - Fingerprints behavior patterns  
 6. **Risk Scoring Module**  
    - Assigns risk value  
@@ -42,6 +42,8 @@ The system consists of the following modules:
    - Normal Access (low risk)  
    - Deception Sandbox (high risk)  
 8. **Monitoring Dashboard**
+
+---
 
 ## 🖼 Architecture Diagram
 
@@ -54,7 +56,7 @@ The system consists of the following modules:
 - Backend: **FastAPI (Python)**  
 - Frontend: **React or simple HTML/CSS**  
 - Database: **SQLite**  
-- Visualization / Dashboard: **Chart.js / Streamlit**  
+- Visualization / Dashboard: **Chart.js / Streamlit**
 
 ---
 
