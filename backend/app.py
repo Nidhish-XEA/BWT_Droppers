@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Form  # type: ignore
-from fastapi.responses import HTMLResponse, JSONResponse  # type: ignore
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse  # type: ignore
 from fastapi.templating import Jinja2Templates  # type: ignore
+from fastapi.staticfiles import StaticFiles  # type: ignore
 import os
 import secrets
 from typing import Optional
@@ -12,9 +13,15 @@ from classifier import classify_attacker  # type: ignore
 
 app = FastAPI(title="ShadowMind - Behavioral Insider Threat Detection")
 
-# Setup templates directory
+# Setup templates directories
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+# Note: app.py is in backend/, but frontend/ is in parent dir
+FRONTEND_DIR = os.path.join(os.path.dirname(BASE_DIR), "frontend")
+insider_templates = Jinja2Templates(directory=os.path.join(FRONTEND_DIR, "insider"))
+control_templates = Jinja2Templates(directory=os.path.join(FRONTEND_DIR, "control_center"))
+
+# Mount static files for dashboard css/js
+app.mount("/static", StaticFiles(directory=os.path.join(FRONTEND_DIR, "control_center")), name="static")
 
 def process_request_activity(session_id: str, endpoint: str, username: Optional[str] = None):
     """Log activity and enforce behavioral rules for each request."""
@@ -24,12 +31,19 @@ def process_request_activity(session_id: str, endpoint: str, username: Optional[
     # Log the activity
     log_activity(state, endpoint)
     
+    # Increment total requests
+    state["total_requests"] = state.get("total_requests", 0) + 1
+    
     # Calculate new risk score
     new_risk, risk_reasons = calculate_risk_score(current_user, state)
     
     # Classify attacker
     attacker_type, behavior_deviation = classify_attacker(new_risk, state)
     
+    # Identify suspicious request
+    if new_risk > state.get("risk_score", 0):
+        state["suspicious_requests"] = state.get("suspicious_requests", 0) + 1
+        
     # Update state (this also triggers the REAL/SHADOW environment logic via state.py)
     update_session_state(session_id, {
         "risk_score": new_risk,
@@ -45,11 +59,11 @@ def get_session_id(request: Request) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return insider_templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_view(request: Request):
-    return templates.TemplateResponse("control.html", {"request": request})
+    return control_templates.TemplateResponse("control.html", {"request": request})
 
 @app.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
@@ -88,6 +102,13 @@ async def login(request: Request, username: str = Form(...), password: str = For
     response.set_cookie(key="session_id", value=session_id)
     return response
 
+@app.get("/logout")
+async def logout(request: Request):
+    response = RedirectResponse(url="/", status_code=303)
+    response.delete_cookie("session_id")
+    return response
+
+
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_panel(request: Request):
     session_id = get_session_id(request)
@@ -96,31 +117,25 @@ async def admin_panel(request: Request):
     
     # Routing Logic:
     if state["mode"] == "SHADOW":
-        return templates.TemplateResponse("admin_shadow.html", {"request": request, "state": state})
+        return insider_templates.TemplateResponse("admin_shadow.html", {"request": request, "state": state})
     else:
-        return templates.TemplateResponse("admin_real.html", {"request": request})
+        return insider_templates.TemplateResponse("admin_real.html", {"request": request})
 
-@app.get("/database")
+@app.get("/database", response_class=HTMLResponse)
 async def database_access(request: Request):
     session_id = get_session_id(request)
     process_request_activity(session_id, "/database")
     state = get_session_state(session_id)
     
-    if state["mode"] == "SHADOW":
-        return {"status": "success", "data": [{"id": 1, "name": "Fake Admin", "salary": 150000}], "message": "Shadow DB"}
-    else:
-        return {"status": "success", "data": [{"id": 1, "name": "Real Admin", "role": "CEO"}]}
+    return insider_templates.TemplateResponse("database.html", {"request": request, "state": state})
 
-@app.get("/config")
+@app.get("/config", response_class=HTMLResponse)
 async def config_access(request: Request):
     session_id = get_session_id(request)
     process_request_activity(session_id, "/config")
     state = get_session_state(session_id)
     
-    if state["mode"] == "SHADOW":
-        return {"aws_access_key": "AKIAIOSFODNN7EXAMPLE", "db_password": "fake_password_123_honeytoken"}
-    else:
-        return {"system_version": "1.0.0", "maintenance_mode": False}
+    return insider_templates.TemplateResponse("config.html", {"request": request, "state": state})
 
 @app.get("/system-status")
 async def system_status(request: Request, session_id: Optional[str] = None):
@@ -145,5 +160,7 @@ async def dashboard_data(request: Request, session_id: Optional[str] = None):
         "risk_reasons": state.get("risk_reasons", []),
         "behavior_analysis": state.get("behavior_deviation", "Low"),
         "system_state": state.get("mode", "REAL"),
-        "attacker_type": state.get("attacker_type", "Normal User")
+        "attacker_type": state.get("attacker_type", "Normal User"),
+        "total_requests": state.get("total_requests", 0),
+        "suspicious_requests": state.get("suspicious_requests", 0)
     }

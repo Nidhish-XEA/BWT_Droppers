@@ -20,9 +20,9 @@ def test_flow():
         print("Status:", res.json())
         
         print("\n3. Attacker behavior (Rapid requests & sensitive endpoints)")
-        for _ in range(4): # trigger sensitive access + rapid requests
+        for idx in range(4): # trigger sensitive access + rapid requests
             res = session.get(f"{BASE_URL}/database")
-            print("DB Status:", res.json().get("status", "unknown"))
+            print(f"DB Request {idx+1} Status Code:", res.status_code)
             time.sleep(0.1)
             
         res = session.get(f"{BASE_URL}/system-status")

@@ -41,16 +41,12 @@ def log_activity(session_state: Dict[str, Any], endpoint: str, is_login_attempt:
     start = datetime.fromisoformat(session_state["start_time"])
     session_state["session_duration_seconds"] = (now - start).total_seconds()
     
-    # Append to logs for dashboard visualization
-    log_entry = {
-        "timestamp": now.isoformat(),
-        "endpoint": endpoint,
-        "type": "login_attempt" if is_login_attempt else "access",
-        "status": "success" if login_success else "regular"
-    }
-    if not is_login_attempt:
-        log_entry["status"] = "accessed"
-    elif not login_success:
-        log_entry["status"] = "failed"
+    # Append to logs for dashboard visualization as a formatted string
+    time_str = now.strftime("%H:%M:%S")
+    if is_login_attempt:
+        msg = f"Successful Login - {endpoint}" if login_success else f"Failed Login Attempt - {endpoint}"
+    else:
+        msg = f"Accessed - {endpoint}"
         
-    session_state.setdefault("logs", []).append(log_entry)
+    log_string = f"[{time_str}] {msg}"
+    session_state.setdefault("logs", []).append(log_string)

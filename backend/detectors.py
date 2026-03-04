@@ -59,5 +59,6 @@ def calculate_risk_score(username: str, session_data: Dict[str, Any]) -> Tuple[i
             reasons.append("+30 Sensitive endpoint probing")
             break  # Apply once for sensitive endpoints
             
-    # Cap score at 100
-    return min(100, calculated_score), reasons
+    # Cap score at 100 and ensure it never decreases
+    final_score = max(current_score, calculated_score)
+    return min(100, final_score), reasons

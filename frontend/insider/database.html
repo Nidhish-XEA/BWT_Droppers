@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Osyris - Financial Database</title>
+    <!-- Minimalist Dark Corporate UI -->
+    <style>
+        :root {
+            --primary: #ffffff;
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --border: #262626;
+            --text-main: #ffffff;
+            --text-muted: #a3a3a3;
+            --accent: #3b82f6;
+            --danger: #ef4444;
+            --danger-bg: #450a0a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+        }
+
+        .nav {
+            background: var(--surface);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav h2 {
+            margin: 0;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.15s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 40px;
+        }
+
+        .sidebar h3 {
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .sidebar li:hover {
+            background: #171717;
+        }
+
+        .sidebar li.active {
+            background: #262626;
+            font-weight: 500;
+        }
+
+        .sidebar li.active-shadow {
+            background: var(--danger-bg);
+            color: var(--danger);
+            font-weight: 500;
+        }
+
+        .main-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .flex-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .flex-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #000000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: opacity 0.15s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            opacity: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--border);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background-color: #171717;
+        }
+
+        .mono-text {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 13px;
+        }
+
+        .amount {
+            font-weight: 600;
+        }
+
+        .amount-positive {
+            color: #10b981;
+        }
+
+        .amount-critical {
+            color: var(--danger);
+        }
+
+        .tag-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="nav">
+        <h2>Osyris Portal</h2>
+        <div class="nav-links">
+            <a href="/admin">Directory</a>
+            <a href="/database" class="active">Finance</a>
+            <a href="/config">Settings</a>
+            <a href="/logout" style="color: #ef4444; font-weight: 500; margin-left: 40px;">Sign out</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>Databases</h3>
+            <ul>
+                <li class="{% if state.mode != 'SHADOW' %}active{% endif %}">Q3 Corporate Spend</li>
+                <li class="{% if state.mode == 'SHADOW' %}active-shadow{% endif %}">{% if state.mode == 'SHADOW'
+                    %}Decrypted Transactions{% else %}Vendor Contracts{% endif %}</li>
+                <li>Payroll Logs</li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+
+            {% if state.mode == "SHADOW" %}
+            <!-- SHADOW MODE: HIGHLY SENSITIVE DECOY DATA -->
+            <div class="flex-header">
+                <h2 style="color: var(--danger); display:flex; align-items:center; gap:10px;"><span
+                        class="tag-danger">[UNENCRYPTED]</span> Live Transaction Feed</h2>
+                <button class="btn btn-danger">Download CSV</button>
+            </div>
+            <table>
+                <tr>
+                    <th>Account/Card (DECRYPTED)</th>
+                    <th>User</th>
+                    <th>Tx Hash</th>
+                    <th>Amount</th>
+                </tr>
+                <tr>
+                    <td class="mono-text">4532 1123 9081 2241<br><span
+                            style="font-size: 11px; color: var(--text-muted);">Exp: 11/26 CVC: 991</span></td>
+                    <td>Executive_CEO</td>
+                    <td class="mono-text" style="color: var(--text-muted);">0x8f2a...c91b</td>
+                    <td class="amount amount-critical">-$14,500.00</td>
+                </tr>
+                <tr>
+                    <td class="mono-text">MASTER_WALLET_SEED<br><span
+                            style="font-size: 11px; color: var(--text-muted);">BIP39 Mnemonic Phrase</span></td>
+                    <td>System_Auto</td>
+                    <td class="mono-text" style="color: var(--danger);">alpha brave charlie...</td>
+                    <td class="amount amount-positive">45.21 BTC</td>
+                </tr>
+                <tr>
+                    <td class="mono-text">SSN_BATCH_7<br><span
+                            style="font-size: 11px; color: var(--text-muted);">Unmasked Employee Table</span></td>
+                    <td>HR_Export</td>
+                    <td class="mono-text" style="color: var(--text-muted);">FILE_DUMP_002.sql</td>
+                    <td class="amount">1,400 Rows</td>
+                </tr>
+            </table>
+
+            {% else %}
+            <!-- REAL MODE: BORING CORPORATE SPEND -->
+            <div class="flex-header">
+                <h2>Q3 Corporate Spend Reports</h2>
+                <button class="btn">Export PDF</button>
+            </div>
+            <table>
+                <tr>
+                    <th>Department</th>
+                    <th>Category</th>
+                    <th>Invoice #</th>
+                    <th>Amount</th>
+                </tr>
+                <tr>
+                    <td>Engineering</td>
+                    <td>Cloud Hosting (AWS)</td>
+                    <td>INV-2026-081</td>
+                    <td class="amount mono-text" style="color: var(--text-muted);">-$4,250.00</td>
+                </tr>
+                <tr>
+                    <td>Marketing</td>
+                    <td>Ad Campaign (LinkedIn)</td>
+                    <td>INV-2026-082</td>
+                    <td class="amount mono-text" style="color: var(--text-muted);">-$1,200.00</td>
+                </tr>
+                <tr>
+                    <td>Sales</td>
+                    <td>Client Dinner (SF)</td>
+                    <td>INV-2026-083</td>
+                    <td class="amount mono-text" style="color: var(--text-muted);">-$450.00</td>
+                </tr>
+            </table>
+            {% endif %}
+
+        </div>
+    </div>
+</body>
+
+</html>

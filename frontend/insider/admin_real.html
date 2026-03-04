@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Osyris - Directory</title>
+    <!-- Minimalist Dark Corporate UI -->
+    <style>
+        :root {
+            --primary: #ffffff;
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --border: #262626;
+            --text-main: #ffffff;
+            --text-muted: #a3a3a3;
+            --accent: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+        }
+
+        .nav {
+            background: var(--surface);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav h2 {
+            margin: 0;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.15s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 40px;
+        }
+
+        .sidebar h3 {
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .sidebar li:hover {
+            background: #171717;
+        }
+
+        .sidebar li.active {
+            background: #262626;
+            font-weight: 500;
+        }
+
+        .main-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .flex-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .flex-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #000000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: opacity 0.15s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            transition: border-color 0.15s;
+        }
+
+        .contact-card:hover {
+            border-color: #404040;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            background: #262626;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .card-info h3 {
+            margin: 0 0 4px 0;
+            color: var(--text-main);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .card-info p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .tag-safe {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="nav">
+        <h2>Osyris Portal</h2>
+        <div class="nav-links">
+            <a href="/admin" class="active">Directory</a>
+            <a href="/database">Finance</a>
+            <a href="/config">Settings</a>
+            <a href="/logout" style="color: #ef4444; font-weight: 500; margin-left: 40px;">Sign out</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>Departments</h3>
+            <ul>
+                <li>Human Resources</li>
+                <li class="active">Engineering</li>
+                <li>Marketing</li>
+                <li>Executive</li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="flex-header">
+                <h2>Engineering Team Directory</h2>
+                <button class="btn">Add Member</button>
+            </div>
+
+            <div class="card-grid">
+                <div class="contact-card">
+                    <div class="avatar" style="background:#0c4a6e; color:#7dd3fc;">SM</div>
+                    <div class="card-info">
+                        <h3>Sarah Miller</h3>
+                        <p>Senior Frontend Developer</p>
+                        <span class="tag tag-safe">Active</span>
+                    </div>
+                </div>
+
+                <div class="contact-card">
+                    <div class="avatar" style="background:#064e3b; color:#6ee7b7;">JC</div>
+                    <div class="card-info">
+                        <h3>James Chen</h3>
+                        <p>DevOps Engineer</p>
+                        <span class="tag tag-safe">Active</span>
+                    </div>
+                </div>
+
+                <div class="contact-card">
+                    <div class="avatar" style="background:#4c1d95; color:#c4b5fd;">AL</div>
+                    <div class="card-info">
+                        <h3>Anita Loke</h3>
+                        <p>QA Lead</p>
+                        <span class="tag tag-safe">On Leave</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

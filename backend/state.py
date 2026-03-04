@@ -12,6 +12,8 @@ def get_session_state(session_id: str) -> Dict[str, Any]:
             "risk_score": 0,
             "immunity_level": 0,
             "attacker_type": "Normal User",
+            "total_requests": 0,
+            "suspicious_requests": 0,
             "logs": [],
             "analysis": []
         }
@@ -23,7 +25,8 @@ def update_session_state(session_id: str, updates: Dict[str, Any]):
     state.update(updates)
     
     # Environment Logic Priority Rules
-    if state["risk_score"] >= 50:
+    # Once SHADOW mode is engaged, we never revert back to REAL for this session
+    if state.get("mode") == "SHADOW" or state["risk_score"] >= 50:
         state["mode"] = "SHADOW"
     else:
         state["mode"] = "REAL"

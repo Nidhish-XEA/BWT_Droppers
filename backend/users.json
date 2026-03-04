@@ -1,9 +1,23 @@
 {
-  "admin": {
-    "password": "admin123",
+  "employee": {
+    "password": "password123",
+    "signature": {
+      "avg_request_interval": 1,
+      "typical_routes": [
+        "/admin",
+        "/profile",
+        "/documents"
+      ],
+      "max_login_attempts": 3
+    }
+  },
+  "hacker": {
+    "password": "pwned",
     "signature": {
       "avg_request_interval": 2,
-      "typical_routes": ["/admin", "/profile"],
+      "typical_routes": [
+        "/admin"
+      ],
       "max_login_attempts": 2
     }
   }
