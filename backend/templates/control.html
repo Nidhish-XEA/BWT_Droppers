@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShadowMind SOC Operator Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #151a28;
+            --text-main: #e2e8f0;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-blue: #3b82f6;
+            --border-color: #1e293b;
+            --shadow-glow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: var(--accent-green);
+            color: #000;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.shadow-active {
+            background-color: var(--accent-red);
+            color: #fff;
+            box-shadow: var(--shadow-glow);
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-header {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .text-green {
+            color: var(--accent-green) !important;
+        }
+
+        .text-red {
+            color: var(--accent-red) !important;
+        }
+
+        .text-yellow {
+            color: var(--accent-yellow) !important;
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            height: 300px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid var(--accent-blue);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .log-entry.failed {
+            border-left-color: var(--accent-yellow);
+        }
+
+        .log-entry.critical {
+            border-left-color: var(--accent-red);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .log-time {
+            color: #64748b;
+            margin-right: 10px;
+        }
+
+        /* Risk Reasons List */
+        .reason-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reason-item {
+            color: var(--accent-yellow);
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .reason-item::before {
+            content: "⚠️";
+            margin-right: 8px;
+        }
+
+        /* Span 2 cols for logs */
+        .span-2 {
+            grid-column: span 2;
+        }
+
+        .span-3 {
+            grid-column: span 3;
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gauge-center-text {
+            position: absolute;
+            font-size: 36px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>ShadowMind System Defense</h1>
+        <div id="system-status-indicator" class="status-badge">MODE: REAL</div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Panel 1: Risk Gauge -->
+        <div class="panel">
+            <div class="panel-header">Real-Time Risk Score</div>
+            <div class="chart-container">
+                <canvas id="riskChart"></canvas>
+                <div id="risk-number" class="gauge-center-text text-green">0</div>
+            </div>
+        </div>
+
+        <!-- Panel 2: Threat Classification -->
+        <div class="panel">
+            <div class="panel-header">Attacker Classification</div>
+            <div style="display: flex; flex-direction: column; justify-content: space-around; height: 75%;">
+                <div>
+                    <div style="font-size: 12px; color: #64748b;">CURRENT CLASSIFICATION</div>
+                    <div id="attacker-type" class="metric-value text-green">Normal User</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #64748b;">BEHAVIOR DEVIATION</div>
+                    <div id="behavior-deviation" class="metric-value">Low</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 3: Risk Explanations -->
+        <div class="panel">
+            <div class="panel-header">Detection Reasons</div>
+            <ul id="risk-reasons" class="reason-list">
+                <li style="color: #64748b; font-size: 14px; font-style: italic;">No anomalous behavior detected.</li>
+            </ul>
+        </div>
+
+        <!-- Panel 4: Live Activity Feed -->
+        <div class="panel span-3">
+            <div class="panel-header">Live Session Activity Feed</div>
+            <div id="activity-feed" class="activity-feed">
+                <!-- Logs populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js Gauge Setup
+        const ctx = document.getElementById('riskChart').getContext('2d');
+        const riskChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [0, 100], // [Value, Remaining]
+                    backgroundColor: ['#10b981', '#1e293b'],
+                    borderWidth: 0,
+                    circumference: 180,
+                    rotation: 270,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '80%',
+                plugins: { tooltip: { enabled: false }, legend: { display: false } },
+                animation: { animateRotate: true, animateScale: false }
+            }
+        });
+
+        // Helper function to update UI safely
+        function updateUI(data) {
+            // Update Risk Score Gauge
+            const currentRisk = data.risk_score || 0;
+            let riskColor = '#10b981'; // Green
+            let numColorClass = 'text-green';
+
+            if (currentRisk >= 50) { riskColor = '#ef4444'; numColorClass = 'text-red'; } // Red
+            else if (currentRisk >= 20) { riskColor = '#f59e0b'; numColorClass = 'text-yellow'; } // Yellow
+
+            riskChart.data.datasets[0].data = [currentRisk, 100 - currentRisk];
+            riskChart.data.datasets[0].backgroundColor = [riskColor, '#1e293b'];
+            riskChart.update();
+
+            const riskNumEl = document.getElementById('risk-number');
+            riskNumEl.innerText = currentRisk;
+            riskNumEl.className = `gauge-center-text ${numColorClass}`;
+
+            // Update Classifications
+            const attackerEl = document.getElementById('attacker-type');
+            attackerEl.innerText = data.attacker_type || "Normal User";
+            attackerEl.className = `metric-value ${currentRisk >= 50 ? 'text-red' : (currentRisk >= 20 ? 'text-yellow' : 'text-green')}`;
+
+            document.getElementById('behavior-deviation').innerText = data.behavior_analysis || "Low";
+
+            // Update Mode Indicator
+            const modeInd = document.getElementById('system-status-indicator');
+            if (data.system_state === "SHADOW") {
+                modeInd.innerText = "🛑 SHADOW DECEPTION ACTIVATED";
+                modeInd.className = "status-badge shadow-active";
+            } else {
+                modeInd.innerText = "MODE: REAL";
+                modeInd.className = "status-badge";
+            }
+
+            // Update Reasons
+            const reasonsList = document.getElementById('risk-reasons');
+            if (data.risk_reasons && data.risk_reasons.length > 0) {
+                reasonsList.innerHTML = '';
+                data.risk_reasons.forEach(reason => {
+                    const li = document.createElement('li');
+                    li.className = 'reason-item';
+                    li.innerText = reason;
+                    reasonsList.appendChild(li);
+                });
+            } else {
+                reasonsList.innerHTML = '<li style="color: #64748b; font-size: 14px; font-style: italic;">No anomalous behavior detected.</li>';
+            }
+
+            // Update Logs
+            const feed = document.getElementById('activity-feed');
+            feed.innerHTML = '';
+            // Reverse so newest is on top
+            const logs = [...(data.session_logs || [])].reverse();
+            logs.forEach(log => {
+                const div = document.createElement('div');
+                let cssClass = "log-entry";
+
+                if (log.status === "failed") cssClass += " failed";
+
+                // Highlight sensitive endpoint probes as critical visually
+                if (log.endpoint === "/database" || log.endpoint === "/config") {
+                    cssClass += " critical";
+                }
+
+                // Format timestamp
+                const d = new Date(log.timestamp);
+                const timeStr = d.toLocaleTimeString([], { hour12: false }) + '.' + d.getMilliseconds().toString().padStart(3, '0');
+
+                div.className = cssClass;
+                div.innerHTML = `<span class="log-time">[${timeStr}]</span> Action: <strong>${log.type}</strong> | Target: <strong>${log.endpoint}</strong> | Result: ${log.status}`;
+                feed.appendChild(div);
+            });
+        }
+
+        // Fetch data loop
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch('/dashboard-data');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateUI(data);
+                }
+            } catch (err) {
+                console.error("Dashboard API error:", err);
+            }
+        }
+
+        // Poll every 1 second
+        setInterval(fetchDashboardData, 1000);
+        fetchDashboardData();
+    </script>
+</body>
+
+</html>

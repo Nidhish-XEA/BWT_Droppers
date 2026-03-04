@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "password": "admin123",
+    "signature": {
+      "avg_request_interval": 2,
+      "typical_routes": ["/admin", "/profile"],
+      "max_login_attempts": 2
+    }
+  }
+}

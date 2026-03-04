@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ShadowMind Admin Dashboard</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #f4f6f9;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #e74c3c;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #34495e;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .data-box {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            color: #2ecc71;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Internal Admin Panel (CONFIDENTIAL)</h1>
+
+        <p>Warning: You are accessing sensitive production infrastructure.</p>
+
+        <div class="section-title">Database Backups</div>
+        <div class="data-box">
+            [+] finance_backup.sql (24GB)<br>
+            [+] users_master_dump_2026.sql (12GB)<br>
+            [+] HR_salaries_Q3.xlsx
+        </div>
+
+        <div class="section-title">System Credentials</div>
+        <div class="data-box">
+            root:admin@123<br>
+            backup_user:backup@321<br>
+            db_admin:P@ssw0rd_DB!
+        </div>
+
+        <div style="display:none;" id="shadow-marker">
+            [SHADOW-ENVIRONMENT-ACTIVE: Data served is fake]
+        </div>
+    </div>
+</body>
+
+</html>

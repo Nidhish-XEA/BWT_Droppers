@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+*$py.class
+test_output.txt
+test_reasons.txt
+.env
