@@ -1,0 +1,321 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0b0f14;
+  --panel: #121821;
+  --accent: #00ff9c;
+  --danger: #ff3b3b;
+  --warn: #ffaa00;
+  --text: #e6edf3;
+  --muted: #7d8693;
+  --border: #1e2733;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Cyber grid background */
+.cyber-grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 255, 156, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 156, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Accent glow effects */
+.glow-accent {
+  text-shadow: 0 0 20px rgba(0, 255, 156, 0.6), 0 0 40px rgba(0, 255, 156, 0.3);
+}
+
+.glow-danger {
+  text-shadow: 0 0 20px rgba(255, 59, 59, 0.6), 0 0 40px rgba(255, 59, 59, 0.3);
+}
+
+.border-glow-accent {
+  border-color: rgba(0, 255, 156, 0.4);
+  box-shadow: 0 0 12px rgba(0, 255, 156, 0.2), inset 0 0 12px rgba(0, 255, 156, 0.05);
+}
+
+.border-glow-danger {
+  border-color: rgba(255, 59, 59, 0.5);
+  box-shadow: 0 0 12px rgba(255, 59, 59, 0.2);
+}
+
+/* Panel styles */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.panel-glow {
+  background: var(--panel);
+  border: 1px solid rgba(0, 255, 156, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 156, 0.05);
+}
+
+/* Gradient accent text */
+.gradient-text {
+  background: linear-gradient(135deg, #00ff9c 0%, #00d4ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-danger {
+  background: linear-gradient(135deg, #ff3b3b 0%, #ff7b3b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated scan line */
+.scan-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 156, 0.5), transparent);
+  animation: scanLine 4s linear infinite;
+}
+
+@keyframes scanLine {
+  0% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes glowPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 8px 2px rgba(0, 255, 156, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 20px 6px rgba(0, 255, 156, 0.6);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(135deg, rgba(0, 255, 156, 0.15) 0%, rgba(0, 212, 255, 0.08) 100%);
+  border: 1px solid rgba(0, 255, 156, 0.4);
+  color: #00ff9c;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 156, 0.25) 0%, rgba(0, 212, 255, 0.15) 100%);
+  box-shadow: 0 0 20px rgba(0, 255, 156, 0.3);
+  border-color: rgba(0, 255, 156, 0.7);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, rgba(255, 59, 59, 0.15) 0%, rgba(255, 100, 50, 0.05) 100%);
+  border: 1px solid rgba(255, 59, 59, 0.4);
+  color: #ff3b3b;
+}
+
+/* Risk badge styles */
+.badge-normal {
+  background: rgba(0, 255, 156, 0.1);
+  color: #00ff9c;
+  border: 1px solid rgba(0, 255, 156, 0.3);
+}
+
+.badge-moderate {
+  background: rgba(255, 170, 0, 0.1);
+  color: #ffaa00;
+  border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.badge-suspicious {
+  background: rgba(255, 120, 0, 0.1);
+  color: #ff7800;
+  border: 1px solid rgba(255, 120, 0, 0.3);
+}
+
+.badge-high {
+  background: rgba(255, 59, 59, 0.1);
+  color: #ff3b3b;
+  border: 1px solid rgba(255, 59, 59, 0.3);
+}
+
+.badge-critical {
+  background: rgba(255, 59, 59, 0.2);
+  color: #ff3b3b;
+  border: 1px solid rgba(255, 59, 59, 0.6);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Severity colors */
+.severity-INFO {
+  color: #7d8693;
+}
+
+.severity-WARN {
+  color: #ffaa00;
+}
+
+.severity-HIGH {
+  color: #ff7800;
+}
+
+.severity-CRITICAL {
+  color: #ff3b3b;
+}
+
+/* Page transitions */
+.page-enter {
+  animation: pageEnter 0.5s ease-out forwards;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Table styles */
+.data-table th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(30, 39, 51, 0.5);
+  font-size: 0.875rem;
+}
+
+.data-table tr:hover td {
+  background: rgba(0, 255, 156, 0.02);
+}
+
+/* Recharts overrides */
+.recharts-wrapper {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(30, 39, 51, 0.8) !important;
+}
+
+.recharts-text {
+  fill: #7d8693 !important;
+  font-size: 12px !important;
+}
+
+/* Blinking cursor */
+.cursor-blink::after {
+  content: '_';
+  animation: blink 1s step-end infinite;
+  color: var(--accent);
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--panel) 25%, rgba(30, 39, 51, 0.8) 50%, var(--panel) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
