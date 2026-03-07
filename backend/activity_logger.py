@@ -24,7 +24,7 @@ def log_activity(session_state: Dict[str, Any], endpoint: str, is_login_attempt:
             session_state["login_attempts"] += 1
             
     # Track request intervals (ignore immediate first request since no interval exists yet)
-    if "last_request_time" in session_state:
+    if session_state.get("last_request_time"):
         last_time = datetime.fromisoformat(session_state["last_request_time"])
         interval = (now - last_time).total_seconds()
         
