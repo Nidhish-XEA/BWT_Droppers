@@ -12,6 +12,10 @@
   </p>
 
   <p>
+    <strong><a href="https://shadow-mind-epix6xjgp-nidhish1016-3054s-projects.vercel.app/" target="_blank">🔴 View Live Demo</a></strong>
+  </p>
+
+  <p>
     <a href="#features">Features</a> •
     <a href="#architecture">Architecture</a> •
     <a href="#tech-stack">Tech Stack</a> •
