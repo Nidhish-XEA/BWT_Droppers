@@ -63,4 +63,4 @@ export async function simulateEvent(eventType: string) {
     return res.json();
 }
 
-export const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/ws/threats";
+export const WS_URL = process.env.NEXT_PUBLIC_WS_URL || API_BASE.replace("http://", "ws://").replace("https://", "wss://") + "/ws/threats";

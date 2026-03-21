@@ -10,3 +10,18 @@ services:
         value: 3.10.0
       - key: ALLOWED_ORIGINS
         sync: false
+
+  - type: web
+    name: shadowmind-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: ~18.17.0
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: shadowmind-api
+          envVarKey: RENDER_EXTERNAL_URL
