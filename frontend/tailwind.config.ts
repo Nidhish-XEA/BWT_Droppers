@@ -9,14 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "#0b0f14",
-        panel: "#121821",
-        accent: "#00ff9c",
-        danger: "#ff3b3b",
+        bg: "#050507",
+        panel: "rgba(155,93,229,0.03)",
+        accent: "#9b5de5",
+        danger: "#ff2d55",
         warn: "#ffaa00",
-        "text-primary": "#e6edf3",
-        "text-muted": "#7d8693",
-        border: "#1e2733",
+        "text-primary": "#ede8e0",
+        "text-muted": "rgba(255,255,255,0.4)",
+        border: "rgba(255,255,255,0.06)",
       },
       fontFamily: {
         sans: ["Outfit", "Inter", "system-ui", "sans-serif"],

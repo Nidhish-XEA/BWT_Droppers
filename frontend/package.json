@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@studio-freight/lenis": "^1.0.42",
     "clsx": "^2.1.1",
     "framer-motion": "^12.35.0",
+    "gsap": "^3.14.2",
     "lucide-react": "^0.577.0",
     "next": "14.2.35",
     "react": "^18",

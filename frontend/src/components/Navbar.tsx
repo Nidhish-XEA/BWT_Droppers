@@ -25,6 +25,8 @@ export function Navbar() {
 
     const isLanding = pathname === "/";
 
+    if (isLanding) return null;
+
     return (
         <motion.nav
             initial={{ y: -100, opacity: 0 }}

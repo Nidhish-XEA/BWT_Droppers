@@ -1,598 +1,529 @@
 "use client";
-import { useEffect, useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import Link from "next/link";
-import { Shield, Eye, Zap, Brain, Activity, ChevronRight, Terminal, AlertTriangle } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
-// ─── Animated Cyber Grid Background ─────────────────────────────────────────
-function CyberGrid() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles: { x: number; y: number; vx: number; vy: number; opacity: number }[] = [];
-    for (let i = 0; i < 80; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.5 + 0.1,
-      });
-    }
-
-    let animId: number;
-    function draw() {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Grid lines
-      ctx.strokeStyle = "rgba(0,255,156,0.04)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x < canvas.width; x += 40) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += 40) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-      }
-
-      // Particles
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,255,156,${p.opacity})`;
-        ctx.fill();
-      });
-
-      // Connect nearby particles
-      particles.forEach((a, i) => {
-        particles.slice(i + 1).forEach((b) => {
-          const d = Math.hypot(a.x - b.x, a.y - b.y);
-          if (d < 100) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(0,255,156,${0.1 * (1 - d / 100)})`;
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
-        });
-      });
-
-      animId = requestAnimationFrame(draw);
-    }
-    draw();
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", resize);
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-    />
-  );
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
 }
 
-// ─── Live Threat Feed Ticker ─────────────────────────────────────────────────
-const tickerItems = [
-  "⚠ HIGH RISK: dev_142 — API burst detected (210 calls/hr)",
-  "🔴 CRITICAL: admin42 — Deception trap triggered",
-  "⚠ WARN: bob — Unusual database access pattern",
-  "ℹ MONITOR: svc_bot — Automated behavior confirmed",
-  "🔴 CRITICAL: Unknown — 14 failed login attempts",
-];
-
-function ThreatTicker() {
-  return (
-    <div className="w-full border-t border-b border-border py-2 overflow-hidden bg-panel/40 backdrop-blur-sm">
-      <motion.div
-        animate={{ x: [0, -2000] }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-        className="flex gap-12 whitespace-nowrap"
-      >
-        {[...tickerItems, ...tickerItems].map((item, i) => (
-          <span key={i} className="text-xs font-mono text-text-muted shrink-0">
-            {item}
-          </span>
-        ))}
-      </motion.div>
-    </div>
-  );
-}
-
-// ─── Feature Card ────────────────────────────────────────────────────────────
-const features = [
-  {
-    icon: Activity,
-    title: "Behavioral Threat Detection",
-    description:
-      "Monitor login time anomalies, API request bursts, unusual file downloads, and suspicious access patterns in real-time.",
-    detail: "User dev_142 — 210 API calls/hr vs baseline 20/hr",
-    color: "accent",
-    delay: 0,
-  },
-  {
-    icon: Eye,
-    title: "Deception Traps",
-    description:
-      "Deploy fake credentials, endpoints, and database tables. Any interaction immediately triggers a critical alert.",
-    detail: "CRITICAL: /admin/credentials accessed",
-    color: "danger",
-    delay: 0.1,
-  },
-  {
-    icon: Brain,
-    title: "AI Security Analyst",
-    description:
-      "Natural language threat explanations. Understand exactly what happened, why it's suspicious, and what to do next.",
-    detail: "Automated script or compromised account suspected",
-    color: "accent",
-    delay: 0.2,
-  },
-  {
-    icon: Zap,
-    title: "Threat Timeline",
-    description:
-      "Chronological attack reconstruction. Track how an incident unfolded from first anomaly to critical breach.",
-    detail: "10:04 → 10:07 — 4 escalation events",
-    color: "warn",
-    delay: 0.3,
-  },
-];
-
-function FeatureCard({ feature, index }: { feature: typeof features[0]; index: number }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
-  const Icon = feature.icon;
-  const colorMap = { accent: "#00ff9c", danger: "#ff3b3b", warn: "#ffaa00" };
-  const color = colorMap[feature.color as keyof typeof colorMap];
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: feature.delay }}
-      className="panel p-6 group hover:border-accent/20 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 cursor-default"
-    >
-      <div
-        className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-        style={{ background: `${color}15`, border: `1px solid ${color}30` }}
-      >
-        <Icon className="w-6 h-6" style={{ color }} />
-      </div>
-      <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-      <p className="text-text-muted text-sm leading-relaxed mb-4">{feature.description}</p>
-      <div
-        className="text-xs font-mono px-3 py-2 rounded-md"
-        style={{ background: `${color}08`, color, border: `1px solid ${color}20` }}
-      >
-        {feature.detail}
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Live Network Visualization ───────────────────────────────────────────────
-const nodes = [
-  { id: "alice", x: 50, y: 30, status: "normal", label: "alice" },
-  { id: "bob", x: 78, y: 22, status: "suspicious", label: "bob" },
-  { id: "admin42", x: 65, y: 60, status: "critical", label: "admin42" },
-  { id: "dev_142", x: 30, y: 65, status: "high", label: "dev_142" },
-  { id: "carol", x: 15, y: 40, status: "normal", label: "carol" },
-  { id: "svc_bot", x: 55, y: 85, status: "moderate", label: "svc_bot" },
-  { id: "server1", x: 50, y: 50, status: "normal", label: "core" },
-];
-
-const edges = [
-  ["carol", "server1"], ["alice", "server1"], ["bob", "server1"],
-  ["admin42", "server1"], ["dev_142", "server1"], ["svc_bot", "server1"],
-  ["bob", "admin42"],
-];
-
-function NetworkViz() {
-  const statusColors = {
-    normal: "#00ff9c",
-    moderate: "#ffaa00",
-    suspicious: "#ff7800",
-    high: "#ff5500",
-    critical: "#ff3b3b",
-  };
-
-  return (
-    <div className="w-full aspect-video max-w-2xl mx-auto relative">
-      <svg viewBox="0 0 100 100" className="w-full h-full">
-        {/* Edges */}
-        {edges.map(([a, b], i) => {
-          const na = nodes.find((n) => n.id === a)!;
-          const nb = nodes.find((n) => n.id === b)!;
-          const isSuspicious = na.status !== "normal" || nb.status !== "normal";
-          return (
-            <motion.line
-              key={i}
-              x1={na.x} y1={na.y} x2={nb.x} y2={nb.y}
-              stroke={isSuspicious ? "#ff3b3b" : "#00ff9c"}
-              strokeWidth={isSuspicious ? 0.3 : 0.2}
-              strokeOpacity={isSuspicious ? 0.6 : 0.25}
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.5, delay: i * 0.1 }}
-            />
-          );
-        })}
-        {/* Nodes */}
-        {nodes.map((node, i) => {
-          const color = statusColors[node.status as keyof typeof statusColors];
-          return (
-            <g key={node.id}>
-              <motion.circle
-                cx={node.x} cy={node.y} r={node.id === "server1" ? 3 : 2}
-                fill={color}
-                fillOpacity={0.85}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.5 + i * 0.1 }}
-              />
-              {node.status === "critical" && (
-                <motion.circle
-                  cx={node.x} cy={node.y} r={4}
-                  fill="none"
-                  stroke="#ff3b3b"
-                  strokeWidth={0.3}
-                  animate={{ r: [3, 6], opacity: [0.8, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              )}
-              <text x={node.x + 3} y={node.y - 2} fontSize={2.5} fill={color} fillOpacity={0.8}>
-                {node.label}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 flex flex-col gap-1">
-        {Object.entries(statusColors).map(([status, color]) => (
-          <div key={status} className="flex items-center gap-2 text-xs">
-            <span className="w-2 h-2 rounded-full" style={{ background: color }} />
-            <span className="text-text-muted capitalize">{status}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Stats Bar ────────────────────────────────────────────────────────────────
-const stats = [
-  { label: "Threats Detected Today", value: "47", color: "#ff3b3b" },
-  { label: "Security Score", value: "7.4/10", color: "#00ff9c" },
-  { label: "Active Monitors", value: "6", color: "#00d4ff" },
-  { label: "Traps Triggered", value: "2", color: "#ffaa00" },
-];
-
-// ─── Main Landing Page ───────────────────────────────────────────────────────
 export default function LandingPage() {
-  const heroRef = useRef(null);
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    // Cursor logic
+    const cur = document.getElementById('cursor');
+    const moveCursor = (e: MouseEvent) => {
+      if (cur) {
+        cur.style.left = e.clientX + 'px';
+        cur.style.top  = e.clientY + 'px';
+      }
+    };
+    document.addEventListener('mousemove', moveCursor);
+
+    const handleEnter = () => cur?.classList.add('big');
+    const handleLeave = () => cur?.classList.remove('big');
+
+    const elements = document.querySelectorAll('button, a, .flow-step, .user-row, .tech-item, .feat-row');
+    elements.forEach(el => {
+      el.addEventListener('mouseenter', handleEnter);
+      el.addEventListener('mouseleave', handleLeave);
+    });
+
+    // Hero reveal
+    gsap.from('.hero-title .line span', {
+      y: '110%', duration: 1.4, stagger: 0.1,
+      ease: 'power4.out', delay: 0.3
+    });
+    gsap.from('.eyebrow-line, .eyebrow-text', {
+      opacity: 0, x: -20, duration: 1,
+      ease: 'power3.out', delay: 0.2, stagger: 0.1
+    });
+    gsap.from('.hero-desc, .hero-right', {
+      opacity: 0, y: 30, duration: 1,
+      stagger: 0.12, ease: 'power3.out', delay: 0.9
+    });
+
+    // Parallax hero title
+    gsap.to('.hero .hero-title', {
+      y: -100, ease: 'none',
+      scrollTrigger: {
+        trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true
+      }
+    });
+    gsap.to('.hero-glow', {
+      y: -60, ease: 'none',
+      scrollTrigger: {
+        trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true
+      }
+    });
+
+    // Fade up elements
+    gsap.utils.toArray('.fade-up').forEach((el: any) => {
+      gsap.to(el, {
+        opacity: 1, y: 0, duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 85%' }
+      });
+    });
+
+    // Concept title
+    gsap.from('.concept-title', {
+      y: 60, opacity: 0, duration: 1.1,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: '.concept-title', start: 'top 80%' }
+    });
+
+    // Flow steps stagger
+    gsap.from('.flow-step', {
+      x: -30, opacity: 0, stagger: 0.1, duration: 0.8,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.flow', start: 'top 80%' }
+    });
+
+    // Feat rows
+    gsap.utils.toArray('.feat-row').forEach((row: any) => {
+      gsap.from(row.querySelector('.feat-title'), {
+        x: 40, opacity: 0, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: row, start: 'top 78%' }
+      });
+      gsap.from(row.querySelector('.feat-desc'), {
+        x: 40, opacity: 0, duration: 1, delay: 0.1, ease: 'power3.out',
+        scrollTrigger: { trigger: row, start: 'top 78%' }
+      });
+      gsap.from(row.querySelector('.feat-chips'), {
+        y: 20, opacity: 0, duration: 0.8, delay: 0.2, ease: 'power3.out',
+        scrollTrigger: { trigger: row, start: 'top 78%' }
+      });
+    });
+
+    // Risk bars
+    gsap.utils.toArray('.score-bar').forEach((bar: any) => {
+      gsap.to(bar, {
+        width: bar.dataset.w + '%', duration: 1.4,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: bar, start: 'top 85%' }
+      });
+    });
+
+    // User rows stagger
+    gsap.from('.user-row', {
+      x: -40, opacity: 0, stagger: 0.08, duration: 0.8,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.risk-users', start: 'top 80%' }
+    });
+
+    // CTA clip lines
+    gsap.from('.cta-title .clip-line span', {
+      y: '105%', stagger: 0.1, duration: 1.2,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: '.cta-title', start: 'top 80%' }
+    });
+
+    // Manifesto
+    gsap.from('.manifesto-quote', {
+      y: 80, opacity: 0, duration: 1.3,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: '.manifesto', start: 'top 70%' }
+    });
+
+    // Tech grid
+    gsap.from('.tech-item', {
+      y: 40, opacity: 0, stagger: 0.08, duration: 0.9,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.tech-grid', start: 'top 80%' }
+    });
+
+    // Sandbox title
+    gsap.from('.sandbox-title', {
+      y: 60, opacity: 0, duration: 1.1,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: '.sandbox-title', start: 'top 80%' }
+    });
+
+    // Risk section title
+    gsap.from('.risk-title', {
+      y: 60, opacity: 0, duration: 1.2,
+      ease: 'power4.out',
+      scrollTrigger: { trigger: '.risk-title', start: 'top 80%' }
+    });
+
+    return () => {
+      document.removeEventListener('mousemove', moveCursor);
+      elements.forEach(el => {
+        el.removeEventListener('mouseenter', handleEnter);
+        el.removeEventListener('mouseleave', handleLeave);
+      });
+    };
+  }, { scope: container });
 
   return (
-    <div className="bg-bg min-h-screen overflow-hidden">
-      {/* ── Hero ── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-        <CyberGrid />
+    <div ref={container} className="landing-container">
+      <div id="cursor" className="landing-cursor"></div>
+      <div className="landing-overlay"></div>
 
-        {/* Radial glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent/5 filter blur-[120px] pointer-events-none" />
+      {/* NAV */}
+      <nav className="landing-nav">
+        <div className="landing-nav-logo">SHADOW<em>MIND</em></div>
+        <div className="landing-nav-links">
+          <Link className="landing-nav-link" href="/dashboard">Dashboard</Link>
+          <Link className="landing-nav-link" href="/users">Live Users</Link>
+          <Link className="landing-nav-link" href="/intelligence">Risk Engine</Link>
+          <Link className="landing-nav-link" href="/report">Reports</Link>
+          <Link className="landing-nav-badge" href="/login">SECURE LOGIN</Link>
+        </div>
+      </nav>
 
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto pt-20">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent/30 bg-accent/5 text-accent text-xs font-mono mb-8"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            AI-POWERED SECURITY INTELLIGENCE
-          </motion.div>
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-bg"></div>
+        <div className="hero-glow"></div>
 
-          {/* Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-6xl md:text-8xl font-black tracking-tighter mb-4 leading-none"
-          >
-            <span className="text-white">Shadow</span>
-            <span className="gradient-text">Mind</span>
-          </motion.h1>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-xl md:text-2xl font-semibold text-text-muted mb-3"
-          >
-            AI Security Intelligence Platform
-          </motion.p>
-
-          {/* Tagline */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="text-base md:text-lg text-text-muted/60 font-light mb-10 max-w-xl mx-auto"
-          >
-            Detect hidden threats before they become attacks. ShadowMind watches the shadows of your system.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link href="/dashboard" className="btn-primary flex items-center gap-2 text-sm">
-              <Activity className="w-4 h-4" />
-              Start Monitoring
-            </Link>
-            <Link
-              href="/intelligence"
-              className="flex items-center gap-2 px-6 py-3 rounded-lg border border-border text-text-muted hover:text-white hover:border-white/20 transition-all duration-300 text-sm"
-            >
-              View Intelligence
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </motion.div>
-
-          {/* Terminal preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-16 panel max-w-xl mx-auto text-left p-4"
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-3 h-3 rounded-full bg-red-500/60" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-              <div className="w-3 h-3 rounded-full bg-green-500/60" />
-              <span className="text-text-muted text-xs font-mono ml-2">shadowmind — threat analysis</span>
-            </div>
-            <div className="font-mono text-xs space-y-1.5">
-              <p><span className="text-text-muted">$</span> <span className="text-accent">analyze</span> <span className="text-white">dev_142</span></p>
-              <p className="text-text-muted">→ Baseline: 20 API calls/hr</p>
-              <p className="text-text-muted">→ Current: <span className="text-yellow-400">210 API calls/hr</span></p>
-              <p className="text-text-muted">→ Deviation: <span className="text-red-400">+950%</span></p>
-              <p><span className="text-red-400 font-bold">⚠ RISK LEVEL: HIGH</span> <span className="text-text-muted cursor-blink" /></p>
-            </div>
-          </motion.div>
+        <div className="hero-eyebrow">
+          <div className="eyebrow-line"></div>
+          <div className="eyebrow-text">Adaptive Insider Threat Detection System</div>
         </div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className="text-xs text-text-muted">Scroll to explore</span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-px h-8 bg-gradient-to-b from-accent/50 to-transparent"
-          />
-        </motion.div>
-      </section>
-
-      {/* ── Threat Ticker ── */}
-      <ThreatTicker />
-
-      {/* ── Stats ── */}
-      <section className="relative py-16 px-4 max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="panel p-5 text-center"
-            >
-              <p className="text-2xl font-black" style={{ color: stat.color }}>{stat.value}</p>
-              <p className="text-text-muted text-xs mt-1">{stat.label}</p>
-            </motion.div>
-          ))}
+        <div className="hero-title-wrap">
+          <h1 className="hero-title">
+            <div className="line"><span>SHADOW</span></div>
+            <div className="line"><span className="outline">MIND</span></div>
+            <div className="line"><span className="purple-stroke">///</span></div>
+          </h1>
         </div>
-      </section>
 
-      {/* ── Features ── */}
-      <section className="py-24 px-4 max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-accent text-xs font-mono uppercase tracking-widest mb-3"
-          >
-            Core Capabilities
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-black text-white"
-          >
-            Security that sees{" "}
-            <span className="gradient-text">everything</span>
-          </motion.h2>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {features.map((f, i) => (
-            <FeatureCard key={f.title} feature={f} index={i} />
-          ))}
-        </div>
-      </section>
-
-      {/* ── Live Visualization ── */}
-      <section className="py-24 px-4 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-accent text-xs font-mono uppercase tracking-widest mb-3"
-            >
-              Live Security Map
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl md:text-4xl font-black text-white mb-4"
-            >
-              Watch the{" "}
-              <span className="gradient-text-danger">shadows</span>
-              {" "}move
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-text-muted leading-relaxed mb-6"
-            >
-              ShadowMind maps every connection between users and systems. Nodes glow red when anomalous behavior is detected — giving your SOC team instant spatial awareness of threats.
-            </motion.p>
-            <div className="space-y-3">
-              {[
-                { label: "admin42", status: "CRITICAL", detail: "Deception trap triggered" },
-                { label: "dev_142", status: "HIGH", detail: "210 API calls/hr" },
-                { label: "bob", status: "SUSPICIOUS", detail: "Unusual DB access" },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center justify-between panel px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <AlertTriangle className="w-4 h-4 text-danger" />
-                    <span className="text-sm font-mono text-white">{item.label}</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-danger font-semibold">{item.status}</span>
-                    <p className="text-xs text-text-muted">{item.detail}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+        <div className="hero-bottom">
+          <p className="hero-desc">
+            Insider threats don&apos;t get blocked. They get trapped — in a deception environment designed to profile, study, and neutralize them while the real system stays untouched.
+          </p>
+          <div className="hero-right">
+            <div className="hero-counter">001 / 007</div>
+            <Link href="/dashboard" className="landing-btn primary">View Dashboard</Link>
+            <Link href="/intelligence" className="landing-btn">Security Engine</Link>
           </div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="panel-glow p-4"
-          >
-            <NetworkViz />
-          </motion.div>
         </div>
       </section>
 
-      {/* ── Security Score Section ── */}
-      <section className="py-24 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center"
-        >
-          <div className="panel-glow p-12 relative overflow-hidden">
-            <div className="absolute inset-0 cyber-grid-bg opacity-30" />
-            <div className="relative z-10">
-              <p className="text-accent text-xs font-mono uppercase tracking-widest mb-4">Platform Security Score</p>
-              <div className="text-8xl font-black gradient-text mb-2">7.4</div>
-              <p className="text-text-muted mb-8">out of 10 — Active monitoring across all systems</p>
-              <div className="grid sm:grid-cols-3 gap-4 text-left">
-                {[
-                  { issue: "Abnormal login behavior", severity: "HIGH" },
-                  { issue: "Suspicious file access", severity: "WARN" },
-                  { issue: "High API request burst", severity: "CRITICAL" },
-                ].map((item) => (
-                  <div key={item.issue} className="panel px-4 py-3 flex items-center gap-3">
-                    <span
-                      className={`text-xs font-mono font-bold ${item.severity === "CRITICAL" ? "text-danger" : item.severity === "HIGH" ? "text-orange-400" : "text-warn"
-                        }`}
-                    >
-                      {item.severity}
-                    </span>
-                    <span className="text-xs text-text-muted">{item.issue}</span>
-                  </div>
-                ))}
+      {/* TICKER */}
+      <div className="ticker-wrap">
+        <div className="ticker">
+          <div className="t-item"><span className="t-sep">—</span> <b>ANOMALY DETECTION</b> <span className="t-sep">—</span> BEHAVIORAL PROFILING <span className="t-sep">—</span> <b>DECEPTION SANDBOX</b> <span className="t-sep">—</span> RISK SCORING <span className="t-sep">—</span> <b>ATTACKER CLASSIFICATION</b> <span className="t-sep">—</span> HONEYPOT <span className="t-sep">—</span> <b>INSIDER THREAT</b> <span className="t-sep">—</span> REAL-TIME MONITORING <span className="t-sep">—</span></div>
+          <div className="t-item"><span className="t-sep">—</span> <b>ANOMALY DETECTION</b> <span className="t-sep">—</span> BEHAVIORAL PROFILING <span className="t-sep">—</span> <b>DECEPTION SANDBOX</b> <span className="t-sep">—</span> RISK SCORING <span className="t-sep">—</span> <b>ATTACKER CLASSIFICATION</b> <span className="t-sep">—</span> HONEYPOT <span className="t-sep">—</span> <b>INSIDER THREAT</b> <span className="t-sep">—</span> REAL-TIME MONITORING <span className="t-sep">—</span></div>
+        </div>
+      </div>
+
+      {/* CORE CONCEPT */}
+      <section className="concept">
+        <div className="concept-left">
+          <div className="sec-tag">002 / 007 — CORE CONCEPT</div>
+          <div className="concept-title fade-up">
+            Don&apos;t Block.<br/>
+            <span className="hl">Deceive.</span><br/>
+            Learn.
+          </div>
+          <p className="concept-body fade-up">
+            Traditional security blocks threats at the perimeter. ShadowMind lets them in — into a controlled deception environment that looks real, feels real, but isn&apos;t. Every move the attacker makes is logged, profiled, and used to build a precise behavioral fingerprint.
+            <br/><br/>
+            The real system stays untouched. The attacker stays unaware. You gain intelligence.
+          </p>
+        </div>
+        <div className="concept-right fade-up">
+          <div className="sec-tag" style={{ marginBottom: '20px' }}>THREAT FLOW</div>
+          <div className="flow">
+            <div className="flow-step">
+              <span className="flow-n">01</span>
+              <span className="flow-icon">👁️</span>
+              <div className="flow-info">
+                <div className="flow-label">Activity Monitoring</div>
+                <div className="flow-sub">REAL-TIME BEHAVIORAL BASELINE</div>
               </div>
+              <span className="flow-status" style={{ color: 'var(--green)', borderColor: 'rgba(57,217,138,0.3)' }}>ACTIVE</span>
+            </div>
+            <div className="flow-step">
+              <span className="flow-n">02</span>
+              <span className="flow-icon">⚠️</span>
+              <div className="flow-info">
+                <div className="flow-label">Anomaly Detected</div>
+                <div className="flow-sub">DEVIATION FROM BASELINE</div>
+              </div>
+              <span className="flow-status" style={{ color: '#ffd740', borderColor: 'rgba(255,215,64,0.3)' }}>FLAGGED</span>
+            </div>
+            <div className="flow-step">
+              <span className="flow-n">03</span>
+              <span className="flow-icon">🎯</span>
+              <div className="flow-info">
+                <div className="flow-label">Risk Score Computed</div>
+                <div className="flow-sub">THREAT LEVEL ASSESSMENT</div>
+              </div>
+              <span className="flow-status" style={{ color: 'var(--purple)', borderColor: 'rgba(155,93,229,0.3)' }}>SCORING</span>
+            </div>
+            <div className="flow-step">
+              <span className="flow-n">04</span>
+              <span className="flow-icon">🕳️</span>
+              <div className="flow-info">
+                <div className="flow-label">Routed to Sandbox</div>
+                <div className="flow-sub">DECEPTION ENVIRONMENT ACTIVATED</div>
+              </div>
+              <span className="flow-status" style={{ color: 'var(--red)', borderColor: 'rgba(255,45,85,0.3)' }}>TRAPPED</span>
+            </div>
+            <div className="flow-step">
+              <span className="flow-n">05</span>
+              <span className="flow-icon">🧠</span>
+              <div className="flow-info">
+                <div className="flow-label">Behavioral Intelligence</div>
+                <div className="flow-sub">ATTACKER PROFILE BUILT</div>
+              </div>
+              <span className="flow-status" style={{ color: 'var(--green)', borderColor: 'rgba(57,217,138,0.3)' }}>LEARNING</span>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ── CTA Banner ── */}
-      <section className="py-24 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto text-center"
-        >
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-            Stop threats <span className="gradient-text">before they strike</span>
-          </h2>
-          <p className="text-text-muted mb-8">
-            Start monitoring your systems with AI-powered behavioral detection.
-          </p>
-          <Link href="/dashboard" className="btn-primary inline-flex items-center gap-2">
-            <Shield className="w-4 h-4" />
-            Open Command Center
-          </Link>
-        </motion.div>
+      {/* FEATURES */}
+      <section className="features">
+        <div className="feat-row">
+          <div className="feat-left">
+            <div className="sec-tag">003 / 007</div>
+            <div className="feat-idx">01</div>
+          </div>
+          <div className="feat-right">
+            <div className="feat-tag">REAL-TIME MONITORING</div>
+            <div className="feat-title">Continuous<br/>Behavioral Watch</div>
+            <p className="feat-desc">ShadowMind tracks every user action continuously — file access, network calls, authentication attempts, command execution. A baseline is built. Any deviation triggers evaluation.</p>
+            <div className="feat-chips">
+              <span className="chip purple">KEYSTROKE PATTERNS</span>
+              <span className="chip purple">FILE ACCESS LOGS</span>
+              <span className="chip">NETWORK ACTIVITY</span>
+              <span className="chip">AUTH EVENTS</span>
+              <span className="chip">COMMAND HISTORY</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="feat-row">
+          <div className="feat-left">
+            <div className="feat-idx">02</div>
+          </div>
+          <div className="feat-right">
+            <div className="feat-tag">ATTACKER CLASSIFICATION</div>
+            <div className="feat-title">Know Who<br/>You&apos;re Dealing With</div>
+            <p className="feat-desc">The classification engine reads behavioral fingerprints and predicts attacker skill level — script kiddie, advanced persistent threat, or something in between. Response is calibrated accordingly.</p>
+            <div className="feat-chips">
+              <span className="chip purple">SKILL PROFILING</span>
+              <span className="chip purple">BEHAVIORAL FINGERPRINT</span>
+              <span className="chip">PATTERN MATCHING</span>
+              <span className="chip">ML CLASSIFICATION</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="feat-row">
+          <div className="feat-left">
+            <div className="feat-idx">03</div>
+          </div>
+          <div className="feat-right">
+            <div className="feat-tag">DECEPTION SANDBOX</div>
+            <div className="feat-title">A Prison That<br/>Looks Like Freedom</div>
+            <p className="feat-desc">High-risk users are silently routed to a sandboxed mirror of the real environment. They interact with fake data, fake services, fake responses — while every action is captured in full fidelity.</p>
+            <div className="feat-chips">
+              <span className="chip purple">DOCKER ISOLATION</span>
+              <span className="chip purple">HONEYPOT SERVICES</span>
+              <span className="chip">FAKE DATA INJECTION</span>
+              <span className="chip">TRANSPARENT PROXY</span>
+              <span className="chip">FULL CAPTURE</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="feat-row">
+          <div className="feat-left">
+            <div className="feat-idx">04</div>
+          </div>
+          <div className="feat-right">
+            <div className="feat-tag">CODE SECURITY SCANNING</div>
+            <div className="feat-title">Repos Scanned.<br/>Threats Surfaced.</div>
+            <p className="feat-desc">Clone any repository into a Docker sandbox. Bandit, dependency checkers, and custom fuzzers run in isolation. Real risk scores. Real findings. Zero exposure to live systems.</p>
+            <div className="feat-chips">
+              <span className="chip purple">BANDIT</span>
+              <span className="chip purple">DEPENDENCY CHECK</span>
+              <span className="chip">CUSTOM FUZZERS</span>
+              <span className="chip">DOCKER SANDBOX</span>
+              <span className="chip">RISK SCORING</span>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="border-t border-border py-8 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Shield className="w-5 h-5 text-accent" />
-            <span className="font-bold">
-              <span className="text-white">Shadow</span><span className="text-accent">Mind</span>
-            </span>
+      {/* BIG MARQUEE */}
+      <div className="big-marquee">
+        <div className="bm-inner">
+          <span className="bm-item">DETECT</span>
+          <span className="bm-item lit">DECEIVE</span>
+          <span className="bm-item purple-lit">PROFILE</span>
+          <span className="bm-item">CONTAIN</span>
+          <span className="bm-item lit">LEARN</span>
+          <span className="bm-item purple-lit">NEUTRALIZE</span>
+          <span className="bm-item">DETECT</span>
+          <span className="bm-item lit">DECEIVE</span>
+          <span className="bm-item purple-lit">PROFILE</span>
+          <span className="bm-item">CONTAIN</span>
+          <span className="bm-item lit">LEARN</span>
+          <span className="bm-item purple-lit">NEUTRALIZE</span>
+        </div>
+      </div>
+
+      {/* SANDBOX TERMINAL */}
+      <section className="sandbox">
+        <div className="sec-tag" style={{ marginBottom: '40px' }}>004 / 007 — SANDBOX ENGINE</div>
+        <div className="sandbox-header">
+          <div className="sandbox-title">
+            The<br/>
+            Deception<br/>
+            <span className="stroke">Layer</span>
           </div>
-          <p className="text-text-muted text-xs">
-            © 2026 ShadowMind AI Security Platform. All systems monitored.
-          </p>
-          <div className="flex items-center gap-2 text-xs text-text-muted">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            Systems Operational
+          <div className="sandbox-body">
+            When a user crosses the risk threshold, ShadowMind silently pivots their session into an isolated deception environment. The transition is invisible. The environment looks identical. The attacker has no idea they are now inside a trap — and everything they do becomes intelligence.
+            <br/><br/>
+            Built on Docker. Managed by FastAPI. Logged to SQLite. Visualized in real-time on your dashboard.
           </div>
+        </div>
+        <div className="terminal fade-up">
+          <div className="term-title">SHADOWMIND — SANDBOX RUNTIME LOG</div>
+          <div className="term-line"><span className="term-prompt">›</span><span className="term-cmd">shadowmind scan --user kaze --baseline 72h</span></div>
+          <div className="term-out">Fetching baseline for user: kaze (72h window)</div>
+          <div className="term-out">Actions analyzed: 4,218 &nbsp;|&nbsp; Baseline confidence: 97.3%</div>
+          <div className="term-line"><span className="term-prompt">›</span><span className="term-cmd">shadowmind monitor --live</span></div>
+          <div className="term-out">Monitoring active... anomaly threshold: 0.78</div>
+          <div className="term-warn">⚠ ANOMALY — /etc/passwd accessed outside work hours [score: 0.81]</div>
+          <div className="term-warn">⚠ ANOMALY — SSH lateral movement attempt [score: 0.89]</div>
+          <div className="term-alert">✗ CRITICAL — risk score exceeded threshold [0.89 &gt; 0.78]</div>
+          <div className="term-purple">⟳ Routing user session to deception sandbox...</div>
+          <div className="term-purple">⟳ Injecting fake /etc/passwd — 247 synthetic entries</div>
+          <div className="term-purple">⟳ Honeypot SSH service active on port 2222</div>
+          <div className="term-ok">✓ SANDBOX ACTIVE — user kaze now isolated</div>
+          <div className="term-ok">✓ All actions captured. Real system untouched.</div>
+          <div className="term-line"><span className="term-prompt">›</span><span className="cursor-blink-raw"></span></div>
+        </div>
+      </section>
+
+      {/* RISK SCORES */}
+      <section className="risk-section">
+        <div className="sec-tag" style={{ marginBottom: '40px' }}>005 / 007 — LIVE RISK ENGINE</div>
+        <div className="risk-title">
+          Who&apos;s Being<br/>
+          Watched<br/>
+          <span style={{ color: 'transparent', WebkitTextStroke: '1px rgba(255,255,255,0.1)' }}>Right Now</span>
+        </div>
+        <div className="risk-users">
+          <div className="user-row">
+            <span className="user-idx">01</span>
+            <span className="user-name">dev_arjun</span>
+            <div className="score-bar-wrap"><div className="score-bar" style={{ width: '0%', background: 'var(--red)' }} data-w="89"></div></div>
+            <span className="score-val" style={{ color: 'var(--red)' }}>89</span>
+            <span className="risk-badge" style={{ color: 'var(--red)', borderColor: 'rgba(255,45,85,0.4)' }}>SANDBOXED</span>
+          </div>
+          <div className="user-row">
+            <span className="user-idx">02</span>
+            <span className="user-name">intern_priya</span>
+            <div className="score-bar-wrap"><div className="score-bar" style={{ width: '0%', background: '#ffd740' }} data-w="67"></div></div>
+            <span className="score-val" style={{ color: '#ffd740' }}>67</span>
+            <span className="risk-badge" style={{ color: '#ffd740', borderColor: 'rgba(255,215,64,0.4)' }}>FLAGGED</span>
+          </div>
+          <div className="user-row">
+            <span className="user-idx">03</span>
+            <span className="user-name">sysadmin_rk</span>
+            <div className="score-bar-wrap"><div className="score-bar" style={{ width: '0%', background: '#ff8c42' }} data-w="54"></div></div>
+            <span className="score-val" style={{ color: '#ff8c42' }}>54</span>
+            <span className="risk-badge" style={{ color: '#ff8c42', borderColor: 'rgba(255,140,66,0.4)' }}>WATCHING</span>
+          </div>
+          <div className="user-row">
+            <span className="user-idx">04</span>
+            <span className="user-name">analyst_meera</span>
+            <div className="score-bar-wrap"><div className="score-bar" style={{ width: '0%', background: 'var(--green)' }} data-w="18"></div></div>
+            <span className="score-val" style={{ color: 'var(--green)' }}>18</span>
+            <span className="risk-badge" style={{ color: 'var(--green)', borderColor: 'rgba(57,217,138,0.3)' }}>NORMAL</span>
+          </div>
+          <div className="user-row">
+            <span className="user-idx">05</span>
+            <span className="user-name">backend_kaze</span>
+            <div className="score-bar-wrap"><div className="score-bar" style={{ width: '0%', background: 'var(--green)' }} data-w="11"></div></div>
+            <span className="score-val" style={{ color: 'var(--green)' }}>11</span>
+            <span className="risk-badge" style={{ color: 'var(--green)', borderColor: 'rgba(57,217,138,0.3)' }}>NORMAL</span>
+          </div>
+        </div>
+      </section>
+
+      {/* MANIFESTO */}
+      <section className="manifesto">
+        <div className="manifesto-glow"></div>
+        <div className="sec-tag" style={{ marginBottom: '48px' }}>006 / 007 — PHILOSOPHY</div>
+        <div className="manifesto-quote fade-up">
+          <span className="fade">The threat is already</span> inside.<br/>
+          The question is whether<br/>
+          you <span className="hl">know it</span> — <span className="fade">or they do.</span>
+        </div>
+        <p className="manifesto-sub">
+          ShadowMind was built on one belief: blocking is reactive. Deception is intelligence. The attacker who thinks they&apos;re winning is the most valuable asset you have.
+        </p>
+      </section>
+
+      {/* TECH STACK */}
+      <section className="tech-section">
+        <div className="sec-tag">TECH STACK</div>
+        <div className="tech-grid">
+          <div className="tech-item fade-up">
+            <div className="tech-icon">⚡</div>
+            <div className="tech-name">FastAPI</div>
+            <div className="tech-role">BACKEND ENGINE</div>
+            <div className="tech-desc">Async Python API powering the monitoring, scoring, and sandbox routing pipelines.</div>
+          </div>
+          <div className="tech-item fade-up">
+            <div className="tech-icon">⚛</div>
+            <div className="tech-name">Next.js</div>
+            <div className="tech-role">FRONTEND</div>
+            <div className="tech-desc">React-based dashboard for real-time threat visualization, user risk scores, and sandbox status.</div>
+          </div>
+          <div className="tech-item fade-up">
+            <div className="tech-icon">🐳</div>
+            <div className="tech-name">Docker</div>
+            <div className="tech-role">SANDBOX ISOLATION</div>
+            <div className="tech-desc">Every deception environment is containerized. Full isolation. Clean teardown. No contamination.</div>
+          </div>
+          <div className="tech-item fade-up">
+            <div className="tech-icon">🗄</div>
+            <div className="tech-name">SQLite</div>
+            <div className="tech-role">PERSISTENCE</div>
+            <div className="tech-desc">Lightweight, fast, and portable. All behavioral logs, risk scores, and events stored locally.</div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="cta">
+        <div className="cta-bg-text">SM</div>
+        <div className="cta-tag">007 / 007 — GET STARTED</div>
+        <div className="cta-title">
+          <div className="clip-line"><span>Let Them</span></div>
+          <div className="clip-line"><span className="purple">Think</span></div>
+          <div className="clip-line"><span className="stroke">They Won.</span></div>
+        </div>
+        <div className="cta-btns">
+          <Link href="/login" className="landing-btn primary">Authenticate to System</Link>
+          <Link href="/dashboard" className="landing-btn">View Dashboard →</Link>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="landing-footer">
+        <div className="footer-logo">SHADOW<em>MIND</em> — INSIDER THREAT DETECTION</div>
+        <div className="footer-copy">© 2026 — ALL RIGHTS RESERVED</div>
+        <div className="footer-links">
+          <Link href="#">GITHUB</Link>
+          <Link href="#">DOCS</Link>
+          <Link href="#">PRIVACY</Link>
+          <Link href="#">CONTACT</Link>
         </div>
       </footer>
     </div>

@@ -1,0 +1,320 @@
+﻿python : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python -c "
++ ~~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Traceback (mo   
+ st recent call las    
+t)::String) [], Re    
+moteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+  File "<string>", 
+line 5, in <module>
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\testclient.py", line 
+546, in post
+    return 
+super().post(
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\httpx\_cl
+ient.py", line 1132, 
+in post
+    return 
+self.request(
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\testclient.py", line 
+445, in request
+    return 
+super().request(
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\httpx\_cl
+ient.py", line 814, in 
+request
+    return 
+self.send(request, 
+auth=auth, follow_redir
+ects=follow_redirects)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\httpx\_cl
+ient.py", line 901, in 
+send
+    response = self._se
+nd_handling_auth(
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\httpx\_cl
+ient.py", line 929, in 
+_send_handling_auth
+    response = self._se
+nd_handling_redirects(
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\httpx\_cl
+ient.py", line 966, in 
+_send_handling_redirect
+s
+    response = self._se
+nd_single_request(reque
+st)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\httpx\_cl
+ient.py", line 1002, 
+in _send_single_request
+    response = transpor
+t.handle_request(reques
+t)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\testclient.py", line 
+348, in handle_request
+    raise exc
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\testclient.py", line 
+345, in handle_request
+    
+portal.call(self.app, 
+scope, receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\anyio\fro
+m_thread.py", line 
+321, in call
+    return 
+cast(T_Retval, self.sta
+rt_task_soon(func, 
+*args).result())
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+concurrent\futures\_bas
+e.py", line 445, in 
+result
+    return 
+self.__get_result()
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+concurrent\futures\_bas
+e.py", line 390, in 
+__get_result
+    raise 
+self._exception
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\anyio\fro
+m_thread.py", line 
+252, in _call_func
+    retval = await 
+retval_or_awaitable
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\fastapi\a
+pplications.py", line 
+1134, in __call__
+    await super().__cal
+l__(scope, receive, 
+send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\applications.py", 
+line 107, in __call__
+    await self.middlewa
+re_stack(scope, 
+receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\middleware\errors.py",
+ line 186, in __call__
+    raise exc
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\middleware\errors.py",
+ line 164, in __call__
+    await 
+self.app(scope, 
+receive, _send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\middleware\cors.py", 
+line 85, in __call__
+    await 
+self.app(scope, 
+receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\middleware\exceptions.
+py", line 63, in 
+__call__
+    await wrap_app_hand
+ling_exceptions(self.ap
+p, conn)(scope, 
+receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\_exception_handler.py"
+, line 53, in 
+wrapped_app
+    raise exc
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\_exception_handler.py"
+, line 42, in 
+wrapped_app
+    await app(scope, 
+receive, sender)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\fastapi\m
+iddleware\asyncexitstac
+k.py", line 18, in 
+__call__
+    await 
+self.app(scope, 
+receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\routing.py", line 
+716, in __call__
+    await self.middlewa
+re_stack(scope, 
+receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\routing.py", line 
+736, in app
+    await 
+route.handle(scope, 
+receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\routing.py", line 
+290, in handle
+    await 
+self.app(scope, 
+receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\fastapi\r
+outing.py", line 125, 
+in app
+    await wrap_app_hand
+ling_exceptions(app, 
+request)(scope, 
+receive, send)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\_exception_handler.py"
+, line 53, in 
+wrapped_app
+    raise exc
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\starlette
+\_exception_handler.py"
+, line 42, in 
+wrapped_app
+    await app(scope, 
+receive, sender)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\fastapi\r
+outing.py", line 111, 
+in app
+    response = await 
+f(request)
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\fastapi\r
+outing.py", line 391, 
+in app
+    raw_response = 
+await 
+run_endpoint_function(
+  File "C:\Users\Nidhis
+h\AppData\Local\Program
+s\Python\Python310\lib\
+site-packages\fastapi\r
+outing.py", line 290, 
+in 
+run_endpoint_function
+    return await depend
+ant.call(**values)
+  File "C:\Users\Nidhis
+h\ShadowMind\backend\ap
+p.py", line 332, in 
+login
+    
+log_activity(state, 
+"/login", 
+is_login_attempt=True, 
+login_success=login_suc
+cess)
+  File "C:\Users\Nidhis
+h\ShadowMind\backend\ac
+tivity_logger.py", 
+line 28, in 
+log_activity
+    last_time = datetim
+e.fromisoformat(session
+_state["last_request_ti
+me"])
+TypeError: 
+fromisoformat: 
+argument must be str
